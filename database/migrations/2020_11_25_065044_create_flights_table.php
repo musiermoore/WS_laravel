@@ -15,7 +15,21 @@ class CreateFlightsTable extends Migration
     {
         Schema::create('flights', function (Blueprint $table) {
             $table->bigIncrements('id');
+
+            $table->string('flight_code', 10);
+
+            $table->bigIncrements('from_id')->unsigned();
+            $table->bigIncrements('to_id')->unsigned();
+
+            $table->time('time_from');
+            $table->time('time_to');
+
+            $table->integer('cost');
+
             $table->timestamps();
+
+            $table->foreign('from_id')->references('id')->on('airports');
+            $table->foreign('to_id')->references('id')->on('airports');
         });
     }
 

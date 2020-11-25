@@ -15,7 +15,19 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->bigIncrements('id');
+
+            $table->bigIncrements('flight_from')->unsigned();
+            $table->bigIncrements('flight_back')->unsigned()->nullable();
+
+            $table->date('date_from');
+            $table->date('date_back')->nullable();
+
+            $table->string('code', 5);
+
             $table->timestamps();
+
+            $table->foreign('flight_from')->references('id')->on('flights');
+            $table->foreign('flight_back')->references('id')->on('flights');
         });
     }
 
