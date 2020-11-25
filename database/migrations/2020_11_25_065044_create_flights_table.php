@@ -18,8 +18,8 @@ class CreateFlightsTable extends Migration
 
             $table->string('flight_code', 10);
 
-            $table->bigIncrements('from_id')->unsigned();
-            $table->bigIncrements('to_id')->unsigned();
+            $table->bigInteger('from_id')->unsigned();
+            $table->bigInteger('to_id')->unsigned();
 
             $table->time('time_from');
             $table->time('time_to');
