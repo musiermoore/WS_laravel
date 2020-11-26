@@ -8,19 +8,30 @@ use Illuminate\Http\Request;
 
 class AirportController extends Controller
 {
-    public function search()
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
     {
+        if (!$request->filled('query')) {
+            return response()->json([
+                'error' => [
+                    "code"      => 400,
+                    "message"   => "Bad Request",
+                ]
+            ], 400);
+        }
 
-        $query = $_GET['query'] ?? '';
+        $query = $request->input('query');
+
+        $items = Airport::search($query);
 
         return response()->json([
            'data' => [
-               'items' => AirportResource::collection(
-                  Airport::where('name', 'like', '%' . $query . '%')
-                      ->orWhere('iata', 'like', '%' . $query . '%')
-                      ->orWhere('city', 'like', '%' . $query . '%')->get()
-               ),
+               'items' => AirportResource::collection($items),
            ],
-        ]);
+        ], 200);
     }
 }
