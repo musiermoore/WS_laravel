@@ -16,3 +16,9 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group([], function (){
+    Route::get('airport', 'AirportController@search')->name('airport');
+    Route::get('flight', 'FlightController@search')->name('flight');
+});
+
