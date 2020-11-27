@@ -42,15 +42,15 @@ class FlightController extends Controller
 
         $flightsTo = $this->getFlightInformation($request->from, $request->to, $request->date1);
 
-        $flightsBack = [];
+        $flightsBack = collect(); // Насколько приемлемо?
         if($request->has('date2')) {
             $flightsBack = $this->getFlightInformation($request->to, $request->from, $request->date2);
         }
-        
+
         $result = [
           'data' => [
               "flights_to"   => FlightResource::collection($flightsTo),
-              "flights_back" => FlightResource::collection($flightsBack), // error
+              "flights_back" => FlightResource::collection($flightsBack),
           ],
         ];
 
