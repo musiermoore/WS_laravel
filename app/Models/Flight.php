@@ -11,10 +11,33 @@ class Flight extends Model
     {
         return $this->hasOne(Airport::class, 'id', 'from_id');
     }
-    
+
     public function airportTo()
     {
         return $this->hasOne(Airport::class, 'id', 'to_id');
+    }
+
+    /**
+     * @param $from
+     * @param $to
+     * @param $date
+     *
+     * @return mixed
+     */
+    public static function getFlightInformation($from, $to, $date) {
+        $flights = Flight::whereHas('airportFrom', function ($query) use ($from) {
+            $query->where('iata', $from);
+        })->whereHas('airportTo', function ($query) use ($to) {
+            $query->where('iata', $to);
+        })->get();
+
+        $flights = $flights->map(function ($flight) use ($date) {
+            $flight->setDate($date);
+
+            return $flight;
+        });
+
+        return $flights;
     }
 
     /**

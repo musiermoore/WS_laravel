@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\FlightResource;
-use App\Models\Airport;
 use App\Models\Flight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -20,8 +19,8 @@ class FlightController extends Controller
         $rules = [
             'from'       => 'required|exists:airports,iata',
             'to'         => 'required|exists:airports,iata',
-            'date1'      => 'required|date_format:Y-m-d',
-            'date2'      => 'date_format:Y-m-d',
+            'date_from'  => 'required|date_format:Y-m-d',
+            'date_back'  => 'date_format:Y-m-d',
 //            'passengers' => 'int|between:1,8',
         ];
 
@@ -40,11 +39,11 @@ class FlightController extends Controller
             ], 422);
         }
 
-        $flightsTo = $this->getFlightInformation($request->from, $request->to, $request->date1);
+        $flightsTo = Flight::getFlightInformation($request->from, $request->to, $request->date_from);
 
-        $flightsBack = collect(); // Насколько приемлемо?
-        if($request->has('date2')) {
-            $flightsBack = $this->getFlightInformation($request->to, $request->from, $request->date2);
+        $flightsBack = collect();
+        if($request->has('date_back')) {
+            $flightsBack = Flight::getFlightInformation($request->to, $request->from, $request->date_back);
         }
 
         $result = [
@@ -55,28 +54,5 @@ class FlightController extends Controller
         ];
 
         return response()->json($result);
-    }
-
-    /**
-     * @param $from
-     * @param $to
-     * @param $date
-     *
-     * @return mixed
-     */
-    protected function getFlightInformation($from, $to, $date) {
-        $flights = Flight::whereHas('airportFrom', function ($query) use ($from) {
-            $query->where('iata', $from);
-        })->whereHas('airportTo', function ($query) use ($to) {
-            $query->where('iata', $to);
-        })->get();
-
-        $flights = $flights->map(function ($flight) use ($date) {
-            $flight->setDate($date);
-
-            return $flight;
-        });
-
-        return $flights;
     }
 }
