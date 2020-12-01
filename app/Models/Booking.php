@@ -22,4 +22,9 @@ class Booking extends Model
     {
         return $this->hasMany(Passengers::class, 'booking_id', 'id');
     }
+
+    public function getCost()
+    {
+        dd(__METHOD__);
+    }
 }

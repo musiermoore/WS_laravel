@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BookingResource;
+use App\Http\Resources\FlightResource;
 use App\Models\Booking;
+use App\Models\Flight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function booking(Request $request)
     {
         $rules = [
@@ -59,5 +67,29 @@ class BookingController extends Controller
         ];
 
         return response()->json($result, 201);
+    }
+
+    public function info()
+    {
+        dd(__METHOD__); // Затуп
+
+        $flights = Booking::whereHas('flightFrom', function ($query) use ($code) {
+            $query->where('code', $code);
+        })->get();
+        dd(new BookingResource($flights));
+
+
+
+        $result = [
+            'data' => [
+                'code' => $code,
+//                'cost' => Booking::getCost(),
+                'flights' => new FlightResource($flights),
+            ],
+        ];
+
+//        dd($result);
+
+        return response()->json($result, 200);
     }
 }
