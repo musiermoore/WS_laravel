@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
 
             $table->string('document_number', 10);
 
-            $table->string('api_token')->nullable();
+            $table->string('api_token', 64)->nullable();
 
             $table->timestamps();
         });

@@ -22,5 +22,7 @@ Route::group([], function () {
     Route::get('flight', 'FlightController@search')->name('flight');
     Route::post('booking', 'BookingController@booking')->name('booking');
     Route::get('booking/{code}', 'BookingController@info')->name('bookingInfo');
+    Route::post('register', 'AuthController@register')->name('register');
+    Route::post('login', 'AuthController@login')->name('login');
 });
 
