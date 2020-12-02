@@ -40,7 +40,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $data['password'] = Hash::make($data['password']); // ?
+        $data['password'] = Hash::make($data['password']);
 
         User::create($data);
 
@@ -68,13 +68,11 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // $request->phone
         $user = User::where('phone', $data['phone'])->first();
 
         $token = Str::random(60);
-//        if (Auth::validate($data)) {
-        if (Hash::check($data['password'], $user->password)) {
-            //        $request->user()
+
+        if (Auth::validate($data)) {
             $user->forceFill([
                 'api_token' => hash('sha256', $token)
             ])->save();
