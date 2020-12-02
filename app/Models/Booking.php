@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
+    protected $with = [ 'flightFrom', 'flightBack', 'passengers' ];
+
     protected $fillable = ['flight_from', 'flight_back', 'date_from', 'date_back', 'code'];
 
     public function flightFrom()
@@ -25,6 +27,14 @@ class Booking extends Model
 
     public function getCost()
     {
-        dd(__METHOD__);
+        $cost = $this->flightFrom->cost;
+
+        if ($this->flightBack) {
+            $cost += $this->flightBack->cost;
+        }
+
+        $countPassengers = $this->passengers()->count();
+
+        return $countPassengers * $cost;
     }
 }

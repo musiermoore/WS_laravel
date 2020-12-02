@@ -69,27 +69,16 @@ class BookingController extends Controller
         return response()->json($result, 201);
     }
 
-    public function info()
+    public function info($code)
     {
-        dd(__METHOD__); // Затуп
+        $booking = Booking::where('code', $code)->first();
 
-        $flights = Booking::whereHas('flightFrom', function ($query) use ($code) {
-            $query->where('code', $code);
-        })->get();
-        dd(new BookingResource($flights));
+        $booking->flightFrom->setDate($booking->date_from);
 
+        if (!empty($booking->flightBack)) {
+            $booking->flightBack->setDate($booking->date_back);
+        }
 
-
-        $result = [
-            'data' => [
-                'code' => $code,
-//                'cost' => Booking::getCost(),
-                'flights' => new FlightResource($flights),
-            ],
-        ];
-
-//        dd($result);
-
-        return response()->json($result, 200);
+        return new BookingResource($booking);
     }
 }
