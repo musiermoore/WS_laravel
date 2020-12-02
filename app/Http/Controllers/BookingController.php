@@ -69,9 +69,17 @@ class BookingController extends Controller
         return response()->json($result, 201);
     }
 
+    /**
+     * Getting information about booking by code
+     *
+     * @param $code
+     *
+     * @return BookingResource
+     */
     public function info($code)
     {
-        $booking = Booking::where('code', $code)->first();
+        $booking = Booking::with('flightFrom', 'flightBack', 'passengers')
+            ->where('code', $code)->first();
 
         $booking->flightFrom->setDate($booking->date_from);
 
@@ -80,5 +88,33 @@ class BookingController extends Controller
         }
 
         return new BookingResource($booking);
+    }
+
+    public function occupiedPlaces($code)
+    {
+        $booking = Booking::where('code', $code)->first();
+
+        $flightFrom = [
+            'flight_id' => $booking->flight_from,
+            'date' => $booking->date_from,
+        ];
+
+        $occupiedFrom = Booking::getOccupiedPlacesFrom($flightFrom['flight_id'], $flightFrom['date']);
+
+        $flightBack = [
+            'flight_id' => $booking->flight_back,
+            'date' => $booking->date_back,
+        ];
+
+        $occupiedBack = Booking::getOccupiedPlacesBack($flightBack['flight_id'], $flightBack['date']);
+
+        $result = [
+            'data' => [
+                'occupied_from' => $occupiedFrom,
+                'occupied_back' => $occupiedBack,
+            ],
+        ];
+
+        return response()->json($result, 200);
     }
 }
