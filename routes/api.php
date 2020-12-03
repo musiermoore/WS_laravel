@@ -18,12 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group([], function () {
+    Route::post('register', 'AuthController@register')->name('register');
+    Route::post('login', 'AuthController@login')->name('login');
     Route::get('airport', 'AirportController@search')->name('airport');
     Route::get('flight', 'FlightController@search')->name('flight');
     Route::post('booking', 'BookingController@booking')->name('booking');
     Route::get('booking/{code}', 'BookingController@info')->name('booking info');
     Route::get('booking/{code}/seat', 'BookingController@occupiedPlaces')->name('booking seat');
-    Route::post('register', 'AuthController@register')->name('register');
-    Route::post('login', 'AuthController@login')->name('login');
+    Route::patch('booking/{code}/seat', 'BookingController@choosePlace')->name('booking choose place');
 });
 

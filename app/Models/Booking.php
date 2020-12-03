@@ -51,7 +51,7 @@ class Booking extends Model
             if ($passenger->place_from ) {
                 $occupied[] = [
                     'passenger_id' => $passenger->id,
-                    'place'   => $passenger->place_from,
+                    'place'        => $passenger->place_from,
                 ];
             }
         });
@@ -74,7 +74,7 @@ class Booking extends Model
             if ($passenger->place_back) {
                 $occupied[] = [
                     'passenger_id' => $passenger->id,
-                    'place'   => $passenger->place_back,
+                    'place'        => $passenger->place_back,
                 ];
             }
         });

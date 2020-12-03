@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\BookingResource;
-use App\Http\Resources\FlightResource;
+use App\Http\Resources\PassengersResource;
 use App\Models\Booking;
-use App\Models\Flight;
+use App\Models\Passengers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -90,6 +91,13 @@ class BookingController extends Controller
         return new BookingResource($booking);
     }
 
+    /**
+     * Getting information about occupied places by $flight_id and $date
+     *
+     * @param $code
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function occupiedPlaces($code)
     {
         $booking = Booking::where('code', $code)->first();
@@ -116,5 +124,77 @@ class BookingController extends Controller
         ];
 
         return response()->json($result, 200);
+    }
+
+    /**
+     * @param $code
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function choosePlace($code, Request $request)
+    {
+        $rules = [
+            'passenger' => 'required|integer',
+            'seat'      => [
+                'required',
+                'regex:/^(1|2|3|4|5|6|7|8|9|10|11|12)([A-D])$/'
+            ],
+            'type'      => 'required|in:from,back'
+        ];
+
+        $data = $request->input();
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ],
+            ], 422);
+        }
+
+        $booking = Booking::where('code', $code)->first();
+
+        $passenger = Passengers::find($request->passenger);
+
+        if (empty($passenger) || $passenger->booking_id != $booking->id) {
+            return response()->json([
+                'error' => [
+                    'code' => 403,
+                    'message' => 'Passenger does not apply to booking',
+                ],
+            ], 403);
+        }
+
+        if ($request->type === 'from') {
+            $occupiedPlaces = Booking::getOccupiedPlacesFrom($booking->flight_from, $booking->date_from);
+        } elseif ($request->type === 'back') {
+            $occupiedPlaces = Booking::getOccupiedPlacesBack($booking->flight_back, $booking->date_back);
+        }
+        $occupiedPlaces = Arr::pluck($occupiedPlaces, 'place');
+
+        if (in_array($request->seat, $occupiedPlaces)) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'message' => 'Seat is occupied',
+                ],
+            ], 422);
+        }
+
+        if($request->type === 'from') {
+            $passenger->place_from = $request->seat;
+        } else {
+            $passenger->place_back = $request->seat;
+        }
+        $passenger->save();
+
+        return response()->json([
+            'data' => new PassengersResource($passenger),
+        ]);
     }
 }
