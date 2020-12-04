@@ -71,10 +71,11 @@ class AuthController extends Controller
         $user = User::where('phone', $data['phone'])->first();
 
         $token = Str::random(60);
+        $hashToken = hash('sha256', $token);
 
         if (Auth::validate($data)) {
             $user->forceFill([
-                'api_token' => hash('sha256', $token)
+                'api_token' => $hashToken,
             ])->save();
 
             return response()->json([
@@ -82,16 +83,16 @@ class AuthController extends Controller
                     'token' => $token,
                 ],
             ], 200);
-        } else {
-            return response()->json([
-                'error' => [
-                    'code'       => 401,
-                    'message'    => "Unauthorized",
-                    'errors'     => [
-                        'phone'  => "phone or password incorrect",
-                    ],
-                ],
-            ], 401);
         }
+
+        return response()->json([
+            'error' => [
+                'code'       => 401,
+                'message'    => "Unauthorized",
+                'errors'     => [
+                    'phone'  => "phone or password incorrect",
+                ],
+            ],
+        ], 401);
     }
 }

@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware('auth:api')->get('/user', 'UserController@info');
+Route::middleware('auth:api')->get('/user/booking', 'UserController@getBookingsForUser');
+Route::middleware('auth:api')->get('/user/logout', 'UserController@logout');
 
 Route::group([], function () {
     Route::post('register', 'AuthController@register')->name('register');
