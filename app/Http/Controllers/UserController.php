@@ -21,7 +21,7 @@ class UserController extends Controller
         Auth::user()->save();
     }
 
-    public function getBookingsForUser(Request $request)
+    public function getBookingsForUser()
     {
         $document_number = Auth::user()->document_number;
 
