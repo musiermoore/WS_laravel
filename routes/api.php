@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AirportController;
 use Illuminate\Http\Request;
 
 /*
@@ -13,18 +14,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', 'UserController@info');
-Route::middleware('auth:api')->get('/user/booking', 'UserController@getBookingsForUser');
-Route::middleware('auth:api')->get('/user/logout', 'UserController@logout');
+Route::middleware('auth:api')->get('/user',         [ UserController::class, 'info' ]);
+Route::middleware('auth:api')->get('/user/booking', [ UserController::class, 'getBookingsForUser' ]);
+Route::middleware('auth:api')->get('/user/logout',  [ UserController::class, 'logout' ]);
 
-Route::group([], function () {
-    Route::post('register', 'AuthController@register')->name('register');
-    Route::post('login', 'AuthController@login')->name('login');
-    Route::get('airport', 'AirportController@search')->name('airport');
-    Route::get('flight', 'FlightController@search')->name('flight');
-    Route::post('booking', 'BookingController@booking')->name('booking');
-    Route::get('booking/{code}', 'BookingController@info')->name('booking info');
-    Route::get('booking/{code}/seat', 'BookingController@occupiedPlaces')->name('booking seat');
-    Route::patch('booking/{code}/seat', 'BookingController@choosePlace')->name('booking choose place');
-});
+Route::post('register',             [ AuthController::class, 'register'           ])->name('register');
+Route::post('login',                [ AuthController::class, 'login'              ])->name('login');
+Route::get('airport',               [ AirportController::class, 'search'          ])->name('airport');
+Route::get('flight',                [ FlightController::class,'search'            ])->name('flight');
+Route::post('booking',              [ BookingController::class, 'booking'         ])->name('booking');
+Route::get('booking/{code}',        [ BookingController::class, 'info'            ])->name('booking info');
+Route::get('booking/{code}/seat',   [ BookingController::class, 'occupiedPlaces'  ])->name('booking-seat');
+Route::patch('booking/{code}/seat', [ BookingController::class, 'choosePlace'     ])->name('booking-place');
+
 
