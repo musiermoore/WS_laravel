@@ -11,8 +11,14 @@
 |
 */
 
+use App\Http\Controllers\MailController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('/email','MailController')->only(['store', 'index']);
+
+Auth::routes();
