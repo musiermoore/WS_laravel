@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth as Authorization;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -24,9 +24,12 @@ class AuthController extends Controller
             'phone'           => ['required', 'string', 'digits:11', 'unique:users'],
             'document_number' => ['required', 'string', 'digits:10'],
             'password'        => ['required', 'string', 'min:8'],
+            'file'            => ['image'],
         ];
 
         $data = $request->input();
+
+        $path = $request->file('file')->store('uploads','public');
 
         $validator = Validator::make($data, $rules);
 
@@ -54,7 +57,7 @@ class AuthController extends Controller
             'password'        => ['required', 'string', 'min:8'],
         ];
 
-        $data = $request->input();
+        $data = $request->except(['_token']);
 
         $validator = Validator::make($data, $rules);
 
@@ -73,7 +76,7 @@ class AuthController extends Controller
         $token = Str::random(60);
         $hashToken = hash('sha256', $token);
 
-        if (Auth::validate($data)) {
+        if (Authorization::validate($data)) {
             $user->forceFill([
                 'api_token' => $hashToken,
             ])->save();

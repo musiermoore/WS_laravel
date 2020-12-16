@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -21,6 +21,7 @@ class User extends Authenticatable
         'phone',
         'document_number',
         'password',
+        'avatar',
     ];
 
     /**
@@ -32,4 +33,9 @@ class User extends Authenticatable
         'password',
         'api_token',
     ];
+
+//    public static function checkFile($file)
+//    {
+//        //
+//    }
 }
