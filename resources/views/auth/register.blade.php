@@ -112,43 +112,40 @@
                                     {{ __('Submit') }}
                                 </button>
                             </div>
+                        </div>
 
-                            <script src="http://code.jquery.com/jquery-3.3.1.min.js"
-                                    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-                                    crossorigin="anonymous">
-                            </script>
-                            <script>
-                                jQuery(document).ready(function(){
-                                    jQuery('#btn-register').click(function(e){
-                                        e.preventDefault();
-                                        var file_data = $('#file').prop('files')[0];
-                                        var form_data = new FormData();
-                                        form_data.append('file', file_data);
-                                        $.ajaxSetup({
-                                            headers: {
-                                                'X-CSRF-TOKEN': $('meta[name="api_token"]').attr('content')
-                                            }
-                                        });
-                                        jQuery.ajax({
-                                            url: "{{ url('api/register') }}",
-                                            method: 'post',
-                                            cache: false,
-                                            contentType: false,
-                                            processData: false,
-                                            data: form_data,
-                                            success: function(result){
-                                                console.log(result);
-                                            },
-                                            error: function (errors) {
-                                                errors = errors.responseJSON.error;
+                        <script>
+                            jQuery(document).ready(function(){
+                                jQuery('#btn-register').click(function(e){
+                                    e.preventDefault();
+                                    var file_data = $('#file').prop('files')[0];
+                                    var form_data = new FormData();
+                                    form_data.append('file', file_data);
+                                    $.ajaxSetup({
+                                        headers: {
+                                            'X-CSRF-TOKEN': $('meta[name="api_token"]').attr('content')
+                                        }
+                                    });
+                                    jQuery.ajax({
+                                        url: "{{ url('api/register') }}",
+                                        method: 'post',
+                                        cache: false,
+                                        contentType: false,
+                                        processData: false,
+                                        data: form_data,
+                                        success: function(result){
+                                            console.log(result);
+                                        },
+                                        error: function (errors) {
+                                            errors = errors.responseJSON.error;
 
-                                                console.log(errors);
-                                            }
-                                        });
+                                            console.log(errors);
+                                        }
                                     });
                                 });
-                            </script>
-                        </div>
+                            });
+                        </script>
+
                     </form>
                 </div>
             </div>

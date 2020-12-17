@@ -19,6 +19,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('/email','MailController')->only(['store', 'index']);
+Route::get('/email', [ MailController::class, 'index'])->name('email.index');
 
 Auth::routes();

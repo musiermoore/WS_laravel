@@ -8,7 +8,7 @@
                     <div class="card-header">{{ __('Email Send') }}</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('email.store') }}" id="form-send">
+                        <form method="POST" action="{{ route('email.send') }}" id="form-send">
                             @csrf
                             <div class="form-group row">
                                 <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Email') }}</label>
@@ -29,26 +29,53 @@
                                 <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Message') }}</label>
 
                                 <div class="col-md-6">
-                                    <textarea name="message" id="message" class="form-control" style="width: 100%; resize: none" rows="5" minlength="10"></textarea>
+                                    <textarea name="message" id="message" class="form-control" style="width: 100%; resize: none" rows="5" minlength="10">Test message</textarea>
                                 </div>
                             </div>
 
                             <div class="form-group row mb-0">
                                 <div class="col-md-6 offset-md-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button id="btn-send" class="btn btn-primary">
                                         {{ __('Send') }}
                                     </button>
                                 </div>
                             </div>
-                            @if (session('message'))
-                                <div class="form-group row mt-3">
-                                    <div class="col-md-6 offset-md-4">
-                                        <div style="color: green">
-                                            {{ session('message') }}
-                                        </div>
+
+                            <div class="form-group row mt-3 d-none" id="form-message">
+                                <div class="col-md-6 offset-md-4">
+                                    <div style="color: green">
+                                        Email sent
                                     </div>
                                 </div>
-                            @endif
+                            </div>
+
+                            <script>
+                                jQuery(document).ready(function(){
+                                    jQuery('#btn-send').click(function(e){
+                                        e.preventDefault();
+                                        var form_data = new FormData(document.querySelector('form'));
+                                        $.ajaxSetup({
+                                            headers: {
+                                                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                                            }
+                                        });
+                                        jQuery.ajax({
+                                            url: "api/email",
+                                            method: 'post',
+                                            data: form_data,
+                                            processData: false,
+                                            contentType: false,
+                                            success: function(result){
+                                                jQuery('#form-message').addClass('d-block').removeClass('d-none');
+                                            },
+                                            error: function (errors) {
+                                                console.log(errors.responseJSON);
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
+
                         </form>
                     </div>
                 </div>
